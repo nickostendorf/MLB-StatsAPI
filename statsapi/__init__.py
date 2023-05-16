@@ -503,6 +503,7 @@ def boxscore_data(gamePk, timecode=None):
             "obp": "OBP",
             "slg": "SLG",
             "battingOrder": "",
+            "seasonStats": {},
         }
     ]
     # Add away and home column headers
@@ -633,6 +634,7 @@ def boxscore_data(gamePk, timecode=None):
                         "slg"
                     ]
                 ),
+                "seasonStats": boxData[side]["players"]["ID" + batterId]["seasonStats"]["batting"],
             }
             batters[i].append(batter)
 
