@@ -880,18 +880,21 @@ def linescore(gamePk, timecode=None):
     )
 
     # Build the linescore
-    for k in [[header_name, header_row], [away_name, away], [home_name, home]]:
-        linescore += (
-            "{:<%s}" % str(len(max([header_name, away_name, home_name], key=len)) + 1)
-        ).format(k[0])
-        linescore += ("{:^2}" * (len(k[1]) - 3)).format(*k[1])
-        linescore += ("{:^4}" * 3).format(*k[1][-3:])
-        linescore += "\n"
+    # for k in [[header_name, header_row], [away_name, away], [home_name, home]]:
+    #     linescore += (
+    #         "{:<%s}" % str(len(max([header_name, away_name, home_name], key=len)) + 1)
+    #     ).format(k[0])
+    #     linescore += ("{:^2}" * (len(k[1]) - 3)).format(*k[1])
+    #     linescore += ("{:^4}" * 3).format(*k[1][-3:])
+    #     linescore += "\n"
+    ls = {}
+    for i, x in enumerate(header_row):
+        ls[x] = {'away': away[i], 'home': home[i]}
 
-    if len(linescore) > 1:
-        linescore = linescore[:-1]  # strip the extra line break
+    # if len(linescore) > 1:
+    #     linescore = linescore[:-1]  # strip the extra line break
 
-    return linescore
+    return ls
 
 
 def last_game(teamId):
