@@ -466,7 +466,7 @@ def boxscore_data(gamePk, timecode=None):
 
     params = {
         "gamePk": gamePk,
-        "fields": "gameData,game,teams,teamName,shortName,teamStats,batting,atBats,runs,hits,doubles,triples,homeRuns,rbi,stolenBases,strikeOuts,baseOnBalls,leftOnBase,pitching,inningsPitched,earnedRuns,homeRuns,players,boxscoreName,liveData,boxscore,teams,players,id,fullName,allPositions,abbreviation,seasonStats,batting,avg,ops,obp,slg,era,pitchesThrown,numberOfPitches,strikes,battingOrder,info,title,fieldList,note,label,value,wins,losses,holds,blownSaves",
+        "fields": "gameData,game,teams,teamName,shortName,teamStats,batting,atBats,runs,hits,doubles,triples,homeRuns,rbi,stolenBases,strikeOuts,baseOnBalls,leftOnBase,pitching,inningsPitched,earnedRuns,homeRuns,players,boxscoreName,liveData,boxscore,teams,players,id,fullName,allPositions,abbreviation,seasonStats,batting,avg,ops,obp,slg,era,pitchesThrown,numberOfPitches,strikes,battingOrder,info,title,fieldList,note,label,value,wins,losses,holds,blownSaves,status,abstractGameState,linescore,innings,num,home,away,runs,hits,errors",
     }
     if timecode:
         params.update({"timecode": timecode})
@@ -828,7 +828,50 @@ def boxscore_data(gamePk, timecode=None):
     # Get game info
     boxData.update({"gameBoxInfo": r["liveData"]["boxscore"].get("info", [])})
 
-    return boxData
+
+    # Get Linescore - nickostendorf
+    header_name = r["gameData"]["status"]["abstractGameState"]
+    away_name = r["gameData"]["teams"]["away"]["teamName"]
+    home_name = r["gameData"]["teams"]["home"]["teamName"]
+    header_row = []
+    away = []
+    home = []
+
+    for x in r["liveData"]["linescore"]["innings"]:
+        header_row.append(str(x.get("num", "")))
+        away.append(str(x.get("away", {}).get("runs", 0)))
+        home.append(str(x.get("home", {}).get("runs", 0)))
+
+    if len(r["liveData"]["linescore"]["innings"]) < 9:
+        for i in range(len(r["liveData"]["linescore"]["innings"]) + 1, 10):
+            header_row.append(str(i))
+            away.append(" ")
+            home.append(" ")
+
+    header_row.extend(["R", "H", "E"])
+    away_prefix = r["liveData"]["linescore"].get("teams", {}).get("away", {})
+    away.extend(
+        [
+            str(away_prefix.get("runs", 0)),
+            str(away_prefix.get("hits", 0)),
+            str(away_prefix.get("errors", 0)),
+        ]
+    )
+    home_prefix = r["liveData"]["linescore"].get("teams", {}).get("home", {})
+    home.extend(
+        [
+            str(home_prefix.get("runs", 0)),
+            str(home_prefix.get("hits", 0)),
+            str(home_prefix.get("errors", 0)),
+        ]
+    )
+
+    # Build the linescore
+    ls = {}
+    for i, x in enumerate(header_row):
+        ls[x] = {'away': away[i], 'home': home[i]}
+    
+    return boxData, ls
 
 
 def linescore(gamePk, timecode=None):
