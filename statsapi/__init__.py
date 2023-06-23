@@ -109,6 +109,8 @@ def schedule(
                     "home_name": game["teams"]["home"]["team"].get("name", "???"),
                     "away_id": game["teams"]["away"]["team"]["id"],
                     "home_id": game["teams"]["home"]["team"]["id"],
+                    "away_record": f'{game["teams"]["away"]["leagueRecord"]["wins"]}-{game["teams"]["away"]["leagueRecord"]["losses"]}',
+                    "home_record": f'{game["teams"]["home"]["leagueRecord"]["wins"]}-{game["teams"]["home"]["leagueRecord"]["losses"]}',
                     "doubleheader": game["doubleHeader"],
                     "game_num": game["gameNumber"],
                     "home_probable_pitcher": game["teams"]["home"]
