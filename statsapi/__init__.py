@@ -99,10 +99,15 @@ def schedule(
     else:
         for date in r.get("dates"):
             for game in date.get("games"):
+                status =  game["status"]["detailedState"]
+                if status == 'Postponed':
+                    game_date = game['rescheduleGameDate']
+                else:
+                    game_date = date['date']
                 game_info = {
                     "game_id": game["gamePk"],
                     "game_datetime": game["gameDate"],
-                    "game_date": date["date"],
+                    "game_date": game_date,
                     "game_type": game["gameType"],
                     "status": game["status"]["detailedState"],
                     "away_name": game["teams"]["away"]["team"].get("name", "???"),
