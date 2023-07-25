@@ -48,6 +48,7 @@ def schedule(
     opponent="",
     sportId=1,
     game_id=None,
+    session=False
 ):
     """Get list of games for a given date/range and/or team/opponent."""
     if end_date and not start_date:
@@ -91,7 +92,7 @@ def schedule(
         }
     )
 
-    r = get("schedule", params)
+    r = get("schedule", params, session=session)
 
     games = []
     if r.get("totalItems") == 0:
@@ -140,9 +141,16 @@ def schedule(
                     "venue_name": game.get("venue", {}).get("name"),
                     "national_broadcasts": list(
                         set(
-                            broadcast["name"]
-                            for broadcast in game.get("broadcasts", [])
-                            if broadcast.get("isNational", False)
+                            broadcast["name"] 
+                            for broadcast in game.get("broadcasts") 
+                            if broadcast.get('isNational', False)
+                        )
+                    ),
+                    "all_broadcasts": list(
+                        set(
+                            broadcast["name"] 
+                            for broadcast in game.get("broadcasts") 
+                            if broadcast.get("type") == 'TV'
                         )
                     ),
                     "series_status": game.get("seriesStatus", {}).get("result"),
@@ -465,7 +473,7 @@ def boxscore(
     return boxscore
 
 
-def boxscore_data(gamePk, timecode=None):
+def boxscore_data(gamePk, timecode=None, session=False):
     """Returns a python dict containing boxscore data for a given game."""
 
     boxData = {}
@@ -478,7 +486,7 @@ def boxscore_data(gamePk, timecode=None):
     if timecode:
         params.update({"timecode": timecode})
 
-    r = get("game", params)
+    r = get("game", params, session=session)
 
     boxData.update({"gameId": r["gameData"]["game"]["id"]})
     boxData.update({"teamInfo": r["gameData"]["teams"]})
@@ -1665,7 +1673,7 @@ def notes(endpoint):
     return msg
 
 
-def get(endpoint, params, force=False):
+def get(endpoint, params, force=False, session=False):
     """Call MLB StatsAPI and return JSON data.
 
     This function is for advanced querying of the MLB StatsAPI,
@@ -1784,9 +1792,14 @@ def get(endpoint, params, force=False):
             + ". \n--Note: If there are multiple sets in the required parameter list, you can choose any of the sets."
             + note
         )
-
+    print(url)
     # Make the request
-    r = requests.get(url)
+    if session:
+        print("using session")
+        r = session.get(url)
+    else:
+        r = requests.get(url)
+
     if r.status_code not in [200, 201]:
         r.raise_for_status()
     else:
