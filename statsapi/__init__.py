@@ -122,9 +122,11 @@ def schedule(
                     "home_probable_pitcher": game["teams"]["home"]
                     .get("probablePitcher", {})
                     .get("fullName", ""),
+                    "home_probable_pitcher_id": game["teams"]["home"].get("probablePitcher", {}).get("id", {}),
                     "away_probable_pitcher": game["teams"]["away"]
                     .get("probablePitcher", {})
                     .get("fullName", ""),
+                    "away_probable_pitcher_id": game["teams"]["away"].get("probablePitcher", {}).get("id", {}),
                     "home_pitcher_note": game["teams"]["home"]
                     .get("probablePitcher", {})
                     .get("note", ""),
@@ -139,20 +141,20 @@ def schedule(
                     "inning_state": game.get("linescore", {}).get("inningState", ""),
                     "venue_id": game.get("venue", {}).get("id"),
                     "venue_name": game.get("venue", {}).get("name"),
-                    "national_broadcasts": list(
+                    "national_broadcasts": (list(
                         set(
                             broadcast["name"] 
                             for broadcast in game.get("broadcasts") 
                             if broadcast.get('isNational', False)
                         )
-                    ),
-                    "all_broadcasts": list(
+                    ) if game.get("broadcasts") is not None else []),
+                    "all_broadcasts": (list(
                         set(
                             broadcast["name"] 
                             for broadcast in game.get("broadcasts") 
                             if broadcast.get("type") == 'TV'
                         )
-                    ),
+                    ) if game.get("broadcasts") is not None else []),
                     "series_status": game.get("seriesStatus", {}).get("result"),
                 }
                 if game["content"].get("media", {}).get("freeGame", False):
@@ -2101,6 +2103,7 @@ def get(endpoint, params, force=False, session=False):
             + ". \n--Note: If there are multiple sets in the required parameter list, you can choose any of the sets."
             + note
         )
+    print(url)
     # Make the request
     if session:
         r = session.get(url)
