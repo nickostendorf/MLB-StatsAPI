@@ -122,11 +122,11 @@ def schedule(
                     "home_probable_pitcher": game["teams"]["home"]
                     .get("probablePitcher", {})
                     .get("fullName", ""),
-                    "home_probable_pitcher_id": game["teams"]["home"].get("probablePitcher", {}).get("id", {}),
+                    "home_probable_pitcher_id": game["teams"]["home"].get("probablePitcher", {}).get("id", ""),
                     "away_probable_pitcher": game["teams"]["away"]
                     .get("probablePitcher", {})
                     .get("fullName", ""),
-                    "away_probable_pitcher_id": game["teams"]["away"].get("probablePitcher", {}).get("id", {}),
+                    "away_probable_pitcher_id": game["teams"]["away"].get("probablePitcher", {}).get("id", ""),
                     "home_pitcher_note": game["teams"]["home"]
                     .get("probablePitcher", {})
                     .get("note", ""),
