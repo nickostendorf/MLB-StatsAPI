@@ -2103,7 +2103,6 @@ def get(endpoint, params, force=False, session=False):
             + ". \n--Note: If there are multiple sets in the required parameter list, you can choose any of the sets."
             + note
         )
-    print(url)
     # Make the request
     if session:
         r = session.get(url)
